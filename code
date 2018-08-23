@@ -1,0 +1,32 @@
+Sub getContent(stock, myQuery)
+
+Range("A5").CurrentRegion.ClearContents
+
+Dim myXML As Object
+Set myXML = CreateObject("Microsoft.XMLHTTP")
+
+Dim myHTML As Object
+Set myHTML = CreateObject("HTMLFile")
+
+With myXML
+    .Open "GET", "https://www.nasdaq.com/symbol/" & stock & "/financials?query=" & myQuery, False
+    .send
+    myHTML.body.innerHTML = .responseText
+    Set myDiv = myHTML.getElementByID("financials-iframe-wrap")
+    Set myTable = myDiv.getElementsByTagName("table")(0)
+    i = 5
+    For Each myRow In myTable.Rows
+        j = 1
+        For Each myCell In myRow.Cells
+            Cells(i, j) = myCell.innerText
+            j = j + 1
+        Next
+        i = i + 1
+    Next
+    
+End With
+
+Set myXML = Nothing
+Set myHTML = Nothing
+
+End Sub
